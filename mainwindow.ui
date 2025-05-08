@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Epic Music Player</string>
+   <string>Legendary Music Player</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
@@ -75,6 +75,16 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
+           <item>
+            <widget class="QFrame" name="frame">
+             <property name="frameShape">
+              <enum>QFrame::Shape::HLine</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Shadow::Raised</enum>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -99,6 +109,31 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
+           <item>
+            <widget class="QFrame" name="frame_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="layoutDirection">
+              <enum>Qt::LayoutDirection::LeftToRight</enum>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::HLine</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Shadow::Raised</enum>
+             </property>
+             <property name="lineWidth">
+              <number>1</number>
+             </property>
+             <property name="midLineWidth">
+              <number>0</number>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -119,7 +154,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Medio</string>
     </property>
     <addaction name="actionOpen_File"/>
     <addaction name="actionOpen_Folder"/>
@@ -128,7 +163,7 @@
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
-     <string>Tools</string>
+     <string>Herramientas</string>
     </property>
     <addaction name="actionToggle_Visualization"/>
     <addaction name="actionSettings"/>
@@ -174,7 +209,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Toggle Visualization</string>
+    <string>Activar visualización</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>

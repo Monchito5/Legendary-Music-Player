@@ -14,6 +14,7 @@
         <file>icons/shuffle.png</file>
         <file>icons/stop.png</file>
         <file>icons/volume.png</file>
+        <file>icons/undo.png</file>
         <file>styles/dark.qss</file>
         <file>styles/light.qss</file>
         <file>styles/blue.qss</file>
