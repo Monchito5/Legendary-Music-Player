@@ -12,6 +12,39 @@ body {
   }
 }
 
+/* ——— OVERRIDES GLOBALES ——— */
+
+/* Tooltips personalizados */
+QToolTip {
+    color: #ffffff;
+    background-color: #2a82da;
+    border: 1px solid white;
+}
+
+/* Fondo y texto base de todos los widgets */
+QWidget {
+    background-color: #2D2D2D;
+    color: #E6E6E6;
+}
+
+/* Scrollbars verticales estilizadas */
+QScrollBar:vertical {
+    background-color: #2A2A2A;
+    width: 10px;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #5A5A5A;
+    min-height: 20px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;
