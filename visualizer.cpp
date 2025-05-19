@@ -7,6 +7,8 @@
 #include <QtMultimedia/QAudioBuffer>
 #include <QRandomGenerator>
 #include <QTime>
+#include <QLinearGradient>
+#include <QPalette>
 
 Visualizer::Visualizer(QWidget *parent) :
     QWidget(parent),
@@ -40,11 +42,8 @@ Visualizer::Visualizer(QWidget *parent) :
     // Configurar decodificador de audio
     connect(audioDecoder, &QAudioDecoder::bufferReady, this, &Visualizer::onBufferReady);
 
-    // Establecer fondo negro
-    setAutoFillBackground(true);
-    QPalette pal = palette();
-    pal.setColor(QPalette::Window, Qt::black);
-    setPalette(pal);
+    // Inicializar degradado y colores de visualización
+    setupUI();
 }
 
 Visualizer::~Visualizer()
@@ -101,12 +100,33 @@ void Visualizer::processBuffer(const QAudioBuffer &buffer)
     calculateSpectrum();
 }
 
-void Visualizer::paintEvent(QPaintEvent *event)
-{
+void Visualizer::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
 
+    // Usar QElapsedTimer para medir el tiempo de renderizado
+    static QElapsedTimer fpsTimer;
+    static int frameCount = 0;
+    static float fps = 0;
+
+    if (!fpsTimer.isValid()) {
+        fpsTimer.start();
+    }
+
+    // Incrementar contador de frames
+    frameCount++;
+
+    // Calcular FPS cada segundo
+    if (fpsTimer.elapsed() > 1000) {
+        fps = frameCount * 1000.0f / fpsTimer.elapsed();
+        frameCount = 0;
+        fpsTimer.restart();
+    }
+
+    // Limitar la complejidad del renderizado según el FPS
+    bool highQuality = fps > 30;
+
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setRenderHint(QPainter::Antialiasing, highQuality);
 
     // Limpiar fondo
     painter.fillRect(rect(), Qt::black);
@@ -114,14 +134,14 @@ void Visualizer::paintEvent(QPaintEvent *event)
     if (!isActive) {
         // Mostrar mensaje cuando está inactivo
         painter.setPen(Qt::white);
-        painter.drawText(rect(), Qt::AlignCenter, tr("Play music to see visualization"));
+        painter.drawText(rect(), Qt::AlignCenter, tr("Reproduce música para ver la visualización"));
         return;
     }
 
     // Dibujar según el tipo de visualización seleccionado
     switch (visualizationType) {
     case 0: // Forma de onda
-        drawWaveform(painter);
+        drawWaveform(painter, highQuality);
         break;
     case 1: // Espectro
         drawSpectrum(painter);
@@ -130,10 +150,17 @@ void Visualizer::paintEvent(QPaintEvent *event)
         drawCircular(painter);
         break;
     default:
-        drawWaveform(painter);
+        drawWaveform(painter, highQuality);
         break;
     }
+
+// Mostrar FPS en modo debug
+#ifdef QT_DEBUG
+    painter.setPen(Qt::white);
+    painter.drawText(10, 20, QString("FPS: %1").arg(fps, 0, 'f', 1));
+#endif
 }
+
 
 void Visualizer::resizeEvent(QResizeEvent *event)
 {
@@ -179,17 +206,19 @@ void Visualizer::generateRandomSamples()
     calculateSpectrum();
 }
 
-void Visualizer::drawWaveform(QPainter &painter)
-{
+void Visualizer::drawWaveform(QPainter &painter, bool highQuality) {
     int width = this->width();
     int height = this->height();
     int midY = height / 2;
 
-    painter.setPen(QPen(QColor(0, 255, 0), 2));
+    // Ajustar la densidad de puntos según la calidad
+    int step = highQuality ? 1 : 2;
+
+    painter.setPen(QPen(waveformColor, 2));
 
     QPointF prevPoint(0, midY);
 
-    for (int i = 0; i < samples.size(); ++i) {
+    for (int i = 0; i < samples.size(); i += step) {
         float x = i * width / static_cast<float>(samples.size());
         float y = midY * (1 - samples[i]);
 
@@ -304,3 +333,23 @@ void Visualizer::calculateSpectrum()
         spectrum[i] = spectrum[i] * 0.7f + (sum / (end - start)) * 0.3f;
     }
 }
+
+// ——— Bloque integrado ———
+
+void Visualizer::setupUI() {
+    // 1. Fondo con degradado vertical
+    setAutoFillBackground(true);
+    QLinearGradient gradient(0, 0, 0, height());
+    gradient.setColorAt(0, QColor(20, 20, 30));
+    gradient.setColorAt(1, QColor(40, 40, 60));
+
+    QPalette pal = palette();
+    pal.setBrush(QPalette::Window, QBrush(gradient));
+    setPalette(pal);
+
+    // 2. Colores base para waveform y espectro
+    waveformColor     = QColor(0, 210, 250);
+    spectrumBaseColor = QColor(0, 210, 250);
+    spectrumPeakColor = QColor(255, 50, 50);
+}
+

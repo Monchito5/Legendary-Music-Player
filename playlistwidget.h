@@ -5,13 +5,17 @@
 #include <QUrl>
 #include <QStringList>
 #include <QVector>
+#include <QMap>
+#include <QSharedPointer>
 #include <QtMultimedia/QMediaPlayer>
 #include <QFileInfo>
 #include <memory>
-#include <random>
+#include <functional>
 
 // Declaración anticipada para reducir dependencias
-namespace Ui { class PlaylistWidget; }
+namespace Ui {
+class PlaylistWidget;
+}
 
 // Estructura para representar una pista de audio
 struct TrackInfo {
@@ -39,138 +43,66 @@ struct TrackInfo {
     }
 };
 
-struct MetaGroup {
-    QString key;
-    QVector<int> indices;    // índices de pistas en ese grupo
-};
-
-struct AVLNode {
-    QString key;
-    QVector<int> indices;
-    AVLNode *left   = nullptr;
-    AVLNode *right  = nullptr;
-    int height      = 1;
-};
-
-// ——————————————
-// —— PlaylistManager ——
-// ——————————————
-
+// Clase para gestionar la lista de reproducción
 class PlaylistManager {
-    // Lista circular de TrackInfo
-    struct Nodo { TrackInfo pista; Nodo *siguiente; };
-    Nodo   *primero = nullptr;
-    Nodo   *ultimo   = nullptr;
-    int     cantidad = 0;
-
-    // AVL de metadatos
-    AVLNode *metaRoot = nullptr;
-
-    // Shuffle “smart”
-    QVector<int>   shuffledIndices;
-    int            shufflePos = -1;
-    bool           shuffleMode = false;
-
-    // Generador de números aleatorios
-    std::mt19937 rng;
-
-    // Historial de índices (undo), capacidad fija
-    static constexpr int HISTORY_CAPACITY = 32;
-    int history[HISTORY_CAPACITY];
-    int historyTop = 0;  // próxima posición de push
-    int historySize = 0; // cuántos elementos hay
 public:
     PlaylistManager();
     ~PlaylistManager();
 
     // Operaciones básicas
-    void agregarPista(const TrackInfo& pista);
-    void eliminarPista(int indice);
-    void vaciar();
+    void addTrack(const TrackInfo& track);
+    void removeTrack(int index);
+    void clear();
 
-    // Navegación secuencial
-    int indiceSiguiente(int indiceActual) const;
-    int indiceAnterior(int indiceActual) const;
+    // Navegación
+    int nextIndex(bool shuffle, int currentIndex) const;
+    int previousIndex(bool shuffle, int currentIndex) const;
 
     // Acceso a datos
-    TrackInfo pistaEn(int indice) const;
-    int       cantidadDePistas() const;
-    bool      estaVacia() const;
+    TrackInfo trackAt(int index) const;
+    int count() const;
+    bool isEmpty() const;
 
-    // “Smart shuffle”
-    void buildMetadataTree();                // Reconstruye el AVL de grupos
-    void generateSmartShuffle(int current);  // Rellena shuffledIndices
+    // Gestión de reproducción aleatoria
+    void updateShuffleIndices(int currentIndex);
+    void setShuffleMode(bool enabled);
+    bool isShuffleModeEnabled() const;
 
-    // Modo aleatorio
-    void  setShuffleMode(bool on);
-    bool  isShuffleMode() const;
-
-    // Guardar / cargar
-    bool guardarEnArchivo(const QString& ruta) const;
-    bool cargarDesdeArchivo(const QString& ruta);
-
-    // Índice actual de reproducción
-    void setCurrentIndex(int idx);
-    int  getCurrentIndex() const;
-
-    // Callback al terminar pista
-    using EndCallback = std::function<void(int newIndex)>;
-    void setEndCallback(EndCallback cb);
-
-    // Métodos de historial
-    bool canUndo() const;
-    int  undo();  // devuelve índice anterior o -1
-
-    // Reemplazamos next/previous para registrar historial
-    int nextIndexSmart();
-    int previousIndexSmart();
+    // Guardar/cargar
+    bool saveToFile(const QString& filePath) const;
+    bool loadFromFile(const QString& filePath);
 
 private:
-    // Helpers AVL
-    AVLNode* insertOrUpdate(AVLNode* node, const QString& key, int idx);
-    void     collectInOrder(AVLNode* node, QVector<MetaGroup>& out);
-    void     freeTree(AVLNode* node);
+    QVector<TrackInfo> tracks;
+    QVector<int> shuffleIndices;
+    bool shuffleMode;
 
-    // Utility para limpiar shuffle previo
-    void clearShuffle();
-
-    void pushHistory(int idx);
-    EndCallback endCb;
+    // Métodos auxiliares
+    void rebuildShuffleIndices(int currentIndex = -1);
 };
 
-// ——————————————
-// —— PlaylistWidget (UI) ——
-// ——————————————
-
-class PlaylistWidget : public QWidget {
+class PlaylistWidget : public QWidget
+{
     Q_OBJECT
 
 public:
     explicit PlaylistWidget(QWidget *parent = nullptr);
     ~PlaylistWidget();
 
-    // Manipulación de archivos/pistas
+    // Métodos públicos
     void addFiles(const QStringList &files);
     void addFolder(const QString &folder);
-
-    // Controles de reproducción
     void playNext();
     void playPrevious();
-
-    // Directorio
     QString lastDirectory() const;
-    void    setLastDirectory(const QString &dir);
-
-    // Índice actual
+    void setLastDirectory(const QString &directory);
     bool setCurrentIndex(int index);
-    int  getCurrentIndex() const;
-
-    // Estado y conteo
+    int getCurrentIndex() const;
     bool isEmpty() const;
-    int  count() const;
+    int count() const;
 
-    // Datos de la pista actual
-    QUrl      getCurrentTrackUrl() const;
+    // Métodos para acceder a la información de las pistas
+    QUrl getCurrentTrackUrl() const;
     TrackInfo getCurrentTrackInfo() const;
 
 signals:
@@ -186,26 +118,20 @@ private slots:
     void onSavePlaylistClicked();
     void onLoadPlaylistClicked();
     void onShuffleClicked(bool checked);
-    void onShuffleModeToggled(bool on);
-    void onUndoClicked();
-    void onSearchTextChanged(const QString &text);
-    void onBufferProgressChanged(float progress);
-    void onMediaStatusChanged(QMediaPlayer::MediaStatus status);
-    void handleMediaStatusChanged(QMediaPlayer::MediaStatus status);
+    void updatePlaylistView();
 
 private:
     Ui::PlaylistWidget *ui;
     std::unique_ptr<PlaylistManager> playlistManager;
-    QMediaPlayer     *player;
-    QString           currentDirectory;
-    int               currentIndex;
+    QString currentDirectory;
+    int currentIndex;
 
-    // Auxiliares UI/data
+    // Métodos auxiliares
+    void setupUI();
     QStringList supportedAudioFormats() const;
     void scanFolderForMusic(const QString &folder, QStringList &files);
     void extractMetadata(TrackInfo &track);
     void initializeConnections();
-    void updatePlaylistView();
     void updateCurrentTrackDisplay();
 };
 

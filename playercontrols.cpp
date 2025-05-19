@@ -27,6 +27,7 @@ PlayerControls::PlayerControls(QWidget *parent) :
     // Configurar valores iniciales
     ui->volumeSlider->setValue(50);
     updateState(QMediaPlayer::StoppedState);
+
 }
 
 PlayerControls::~PlayerControls()

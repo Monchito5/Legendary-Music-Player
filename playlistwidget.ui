@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>381</width>
+    <width>300</width>
     <height>500</height>
    </rect>
   </property>
@@ -28,25 +28,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="searchLineEdit">
-     <property name="placeholderText">
-      <string>Buscar pista, artista o álbum…</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QListWidget" name="playlistView">
-     <property name="focusPolicy">
-      <enum>Qt::FocusPolicy::TabFocus</enum>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Shape::HLine</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Shadow::Raised</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>false</bool>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -160,20 +144,6 @@
        </property>
        <property name="checkable">
         <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="undoButton">
-       <property name="toolTip">
-        <string>Historial</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="resources.qrc">
-         <normaloff>:/icons/undo.png</normaloff>:/icons/undo.png</iconset>
        </property>
       </widget>
      </item>

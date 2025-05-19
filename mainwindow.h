@@ -47,6 +47,7 @@ private:
     bool repeatMode;
     bool shuffleMode;
 
+    void setupUI();
     void setupConnections();
     void setupMenus();
     void loadSettings();

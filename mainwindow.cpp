@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Configurar conexiones
     setupConnections();
-
+    setupUI();
     // Configurar menús
     setupMenus();
 
@@ -238,4 +238,30 @@ void MainWindow::onMediaStatusChanged(QMediaPlayer::MediaStatus status)
             playlistWidget->playNext();
         }
     }
+}
+
+void MainWindow::setupUI() {
+    // Establecer paleta de colores moderna
+    QPalette darkPalette;
+    darkPalette.setColor(QPalette::Window, QColor(45, 45, 45));
+    darkPalette.setColor(QPalette::WindowText, QColor(230, 230, 230));
+    darkPalette.setColor(QPalette::Base, QColor(25, 25, 25));
+    darkPalette.setColor(QPalette::AlternateBase, QColor(35, 35, 35));
+    darkPalette.setColor(QPalette::Text, QColor(230, 230, 230));
+    darkPalette.setColor(QPalette::Button, QColor(45, 45, 45));
+    darkPalette.setColor(QPalette::ButtonText, QColor(230, 230, 230));
+    darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+    darkPalette.setColor(QPalette::HighlightedText, Qt::white);
+
+    // Aplicar paleta
+    qApp->setPalette(darkPalette);
+
+    // Establecer estilo de hoja
+    qApp->setStyleSheet(
+        "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }"
+        "QWidget { background-color: #2D2D2D; color: #E6E6E6; }"
+        "QScrollBar:vertical { background-color: #2A2A2A; width: 10px; margin: 0px; }"
+        "QScrollBar::handle:vertical { background-color: #5A5A5A; min-height: 20px; }"
+        "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0px; }"
+        );
 }

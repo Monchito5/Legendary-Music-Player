@@ -45,7 +45,12 @@ private:
     QAudioDecoder *audioDecoder;
     QRandomGenerator randomGenerator;
 
-    void drawWaveform(QPainter &painter);
+    QColor waveformColor;
+    QColor spectrumBaseColor;
+    QColor spectrumPeakColor;
+
+    void setupUI();
+    void drawWaveform(QPainter &painter, bool highQuality);
     void drawSpectrum(QPainter &painter);
     void drawCircular(QPainter &painter);
     void calculateSpectrum();
