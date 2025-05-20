@@ -43,6 +43,34 @@ struct TrackInfo {
     }
 };
 
+class BSTNode {
+public:
+    TrackInfo track;
+    BSTNode* left;
+    BSTNode* right;
+
+    BSTNode(const TrackInfo &track);
+};
+
+// Clase para gestionar el Árbol de Búsqueda
+class BSTManager {
+public:
+    BSTManager();
+    ~BSTManager();
+
+    void insert(const TrackInfo &track);
+    TrackInfo search(const QString &title) const;
+    void clear();
+
+private:
+    BSTNode* root;
+
+    BSTNode* insertRecursive(BSTNode* node, const TrackInfo &track);
+    BSTNode* searchRecursive(BSTNode* node, const QString &title) const;
+    void clearRecursive(BSTNode* node);
+    QString normalizeKey(const QString &key) const;
+};
+
 // Clase para gestionar la lista de reproducción
 class PlaylistManager {
 public:
@@ -72,10 +100,14 @@ public:
     bool saveToFile(const QString& filePath) const;
     bool loadFromFile(const QString& filePath);
 
+    // Búsqueda
+    TrackInfo searchTrack(const QString &title) const;
 private:
     QVector<TrackInfo> tracks;
     QVector<int> shuffleIndices;
     bool shuffleMode;
+
+    BSTManager bst;
 
     // Métodos auxiliares
     void rebuildShuffleIndices(int currentIndex = -1);
@@ -119,6 +151,8 @@ private slots:
     void onLoadPlaylistClicked();
     void onShuffleClicked(bool checked);
     void updatePlaylistView();
+    // Búsqueda
+    void onSearchTextChanged(const QString &query);
 
 private:
     Ui::PlaylistWidget *ui;

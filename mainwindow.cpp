@@ -242,26 +242,32 @@ void MainWindow::onMediaStatusChanged(QMediaPlayer::MediaStatus status)
 
 void MainWindow::setupUI() {
     // Establecer paleta de colores moderna
-    QPalette darkPalette;
-    darkPalette.setColor(QPalette::Window, QColor(45, 45, 45));
-    darkPalette.setColor(QPalette::WindowText, QColor(230, 230, 230));
-    darkPalette.setColor(QPalette::Base, QColor(25, 25, 25));
-    darkPalette.setColor(QPalette::AlternateBase, QColor(35, 35, 35));
-    darkPalette.setColor(QPalette::Text, QColor(230, 230, 230));
-    darkPalette.setColor(QPalette::Button, QColor(45, 45, 45));
-    darkPalette.setColor(QPalette::ButtonText, QColor(230, 230, 230));
-    darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
-    darkPalette.setColor(QPalette::HighlightedText, Qt::white);
+    QPalette bluePalette;
+    bluePalette.setColor(QPalette::Window, QColor(45, 45, 45));
+    bluePalette.setColor(QPalette::WindowText, QColor(230, 230, 230));
+    bluePalette.setColor(QPalette::Base, QColor(25, 25, 25));
+    bluePalette.setColor(QPalette::AlternateBase, QColor(35, 35, 35));
+    bluePalette.setColor(QPalette::Text, QColor(230, 230, 230));
+    bluePalette.setColor(QPalette::Button, QColor(45, 45, 45));
+    bluePalette.setColor(QPalette::ButtonText, QColor(230, 230, 230));
+    bluePalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
+    bluePalette.setColor(QPalette::HighlightedText, Qt::white);
 
     // Aplicar paleta
-    qApp->setPalette(darkPalette);
+    qApp->setPalette(bluePalette);
 
     // Establecer estilo de hoja
     qApp->setStyleSheet(
-        "QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }"
-        "QWidget { background-color: #2D2D2D; color: #E6E6E6; }"
+        "QToolTip { color: #ffffff; background-color:rgb(42, 130, 218); border: 1px solid white; }"
+        "QWidget { background-color: #1A2035; color: #E6E6E6; }"
         "QScrollBar:vertical { background-color: #2A2A2A; width: 10px; margin: 0px; }"
         "QScrollBar::handle:vertical { background-color: #5A5A5A; min-height: 20px; }"
         "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0px; }"
-        );
+        "QMainWindow { background-color: #1A2035; }"
+        "QMenuBar { background-color: #2A3045; color: #E6E6E6; }"
+        "QMenuBar::item:selected { background-color: rgb(218, 98, 42); color: #ffffff; }"
+        "QPushButton { background-color: rgb(218, 98, 42); color: #ffffff; border: 1px solid #3A4055; }"
+        "QPushButton:hover { background-color: rgb(198, 88, 38); }"
+        "QPushButton:pressed { background-color: rgb(178, 78, 28); }"
+    );
 }
